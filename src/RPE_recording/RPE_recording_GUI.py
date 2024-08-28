@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from src.config import PROJ_ROOT
 
 from src.RPE_recording.select_partecipant_and_session import populate_participants, populate_sessions, load_session
-
+from src.utils.beep import beep
 
 
 # Dear PyGui Setup
@@ -29,16 +29,8 @@ participant = None
 session = None
 next_update_time = 0
 
-# Beep function
-def beep(sound_file=PROJ_ROOT / 'sounds' / 'beep.wav'):
-    def _beep():
-        try:
-            playsound(sound_file)
-        except Exception as e:
-            logger.warning(f"Failed to play sound: {e}")
-    
-    # Run the beep in a separate thread
-    threading.Thread(target=_beep, daemon=True).start()
+
+
 
 def update_plot():
     global last_update_time, user_input, next_update_time
