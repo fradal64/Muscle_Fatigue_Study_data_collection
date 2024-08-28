@@ -13,6 +13,8 @@ from src.config import PROJ_ROOT
 
 from src.RPE_recording.select_partecipant_and_session import populate_participants, populate_sessions, load_session
 from src.utils.beep import beep
+from src.utils.save_data import save_data
+
 
 
 # Dear PyGui Setup
@@ -64,24 +66,7 @@ def update_plot():
             dpg.enable_item("input_text")
             dpg.focus_item("input_text")
 
-def save_data():
-    global participant, session, data, time_data
-    if not participant or not session:
-        logger.warning("Participant or session not selected. Data not saved.")
-        return
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"RPE_data_{participant}_{session}_{timestamp}.csv"
-    filepath = PROJ_ROOT / filename
-
-    with open(filepath, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['Time (s)', 'RPE Value'])
-        for t, v in zip(time_data, data):
-            if v is not None:
-                writer.writerow([f"{t:.2f}", v])
-
-    logger.info(f"Data saved to {filepath}")
 
 def toggle_recording(sender, app_data, user_data):
     global recording, start_time, last_update_time, data, time_data, user_input, participant, session
