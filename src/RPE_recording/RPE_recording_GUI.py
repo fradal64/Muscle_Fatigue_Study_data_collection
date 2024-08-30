@@ -14,10 +14,10 @@ sys.path.append(str(Path(__file__).resolve().parents[2]))
 from src.RPE_recording.select_partecipant_and_session import populate_participants, populate_sessions, load_session
 from src.utils.save_data import save_data
 from src.utils.beep import beep
+from src.utils.show_error import show_error
 
 
 
-# TODO: make recording section disabled unless participant and session are selected
 
 # Data storage
 data = []  # Store all data points
@@ -96,21 +96,21 @@ def update_plot():
 def toggle_recording(sender, app_data, user_data):
     global recording, start_time, next_update_time, data, time_data, user_input
 
+    # Load the selected participant and session
+    participant = dpg.get_value("participant_combo")
+    session = dpg.get_value("session_combo")
+
+    # Check if a participant and session are selected
+    if not participant or participant == "No participants found" or not session or session == "No sessions found":
+        error_message = "Please select a valid participant and session before starting recording."
+        logger.error(error_message)
+        show_error(error_message)
+        return
+
+    # Toggle recording state
     recording = not recording
 
     if recording:
-        
-        # Retrieve participant and session
-        participant = dpg.get_value("participant_combo")
-        session = dpg.get_value("session_combo")
-
-        logger.debug(f"Participant: {participant}, Session: {session}")
-        # Display an error message if participant or session is not selected
-        if not participant or not session:
-            logger.error("Please select a participant and session before starting recording.")
-            recording = False
-            return
-
         # Initialize time tracking
         start_time = time.time()
         elapsed_time = 0
@@ -130,7 +130,6 @@ def toggle_recording(sender, app_data, user_data):
         # Show timer
         dpg.configure_item("timer", show=True)
 
-
         # Show input window 
         dpg.configure_item("input_window", show=True)        
 
@@ -138,7 +137,6 @@ def toggle_recording(sender, app_data, user_data):
 
         beep()
     else:
-
         # Update the elapsed time
         current_time = time.time()
         elapsed_time = current_time - start_time
@@ -169,7 +167,6 @@ def toggle_recording(sender, app_data, user_data):
 
         # Clear the plot
         plot_RPE_graph()
-
 
         logger.info("Recording stopped")
         beep()
@@ -224,7 +221,7 @@ with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800)
         dpg.add_line_series([], [], label="RPE", parent=y_axis, tag="line_series")
         dpg.add_scatter_series([], [], label="Data Points", parent=y_axis, tag="scatter_series")
 
-    dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button", enabled=False)
+    dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button")
 
 # Input Window
 with dpg.window(label="Input RPE", tag="input_window", width=300, height=100, pos=[400, 400], no_title_bar=True, no_resize=True, no_move=True, show=False):
@@ -234,8 +231,7 @@ with dpg.window(label="Input RPE", tag="input_window", width=300, height=100, po
 
 populate_participants()
 
-# Disable the record button initially
-dpg.disable_item("record_button")
+
 
 dpg.create_viewport(title='RPE data collection', width=800, height=800)
 dpg.setup_dearpygui()

@@ -34,15 +34,15 @@ def populate_sessions(sender, app_data, user_data):
     else:
         dpg.configure_item("session_combo", items=sessions)
 
+
 def load_session(sender, app_data):
     participant = dpg.get_value("participant_combo")
     session = dpg.get_value("session_combo")
 
     if participant == "No participants found" or session == "No sessions found":
         logger.error("Cannot load session because a valid participant or session was not selected.")
-        dpg.disable_item("record_button")
         return
 
     logger.info(f"Working with participant: {participant}, session: {session}")
-    dpg.enable_item("record_button")
+
 
