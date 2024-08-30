@@ -19,7 +19,7 @@ def save_data(data, time_data):
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"RPE_data_{participant}_{session}_{timestamp}.csv"
-    filepath = RAW_DATA_DIR / participant / session / filename
+    filepath = RAW_DATA_DIR / participant / session / "RPE" / filename 
 
     with open(filepath, 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)

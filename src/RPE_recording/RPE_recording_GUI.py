@@ -41,7 +41,6 @@ dpg.create_context()
 
 
 
-
 def plot_RPE_graph():
     global data, time_data
 
@@ -67,10 +66,6 @@ def plot_RPE_graph():
     else:
         logger.error(f"Unexpected condition for data and time_data: {data}, {time_data}")
         
-    
-
-
-
 
 def update_plot():
     global user_input, next_update_time
@@ -96,7 +91,6 @@ def update_plot():
             
             # Set the next update time between 5 and 15 seconds
             next_update_time = elapsed_time + random.uniform(5, 15)
-
 
 
 def toggle_recording(sender, app_data, user_data):
@@ -180,29 +174,31 @@ def toggle_recording(sender, app_data, user_data):
         logger.info("Recording stopped")
         beep()
 
+
+
 def input_callback(sender, app_data):
     global user_input, data
-    try:
-        value = float(app_data)
-        if 0 <= value <= 100:
-            # Find the last None value in data and replace it
-            for i in range(len(data) - 1, -1, -1):
-                if data[i] is None:
-                    data[i] = value
-                    logger.debug(f"Added point: Time = {time_data[i]:.2f}, Value = {value:.2f}")
-                    break
-            
-            # Clear the input text, disable it, and update the text
-            dpg.set_value("input_text", "")
-            dpg.disable_item("input_text")
-            dpg.set_value("input_text_time", "Waiting for next input")
-            
-            # Update the plot
-            plot_RPE_graph()
-        else:
-            logger.error(f"Input out of range (0-100): {value}")
-    except ValueError:
-        logger.error(f"Invalid input: {app_data}")
+
+    value = float(app_data)
+
+    if value < 0 or value > 100:
+        logger.warning(f"Input out of range (0-100): {value}")
+    
+    # Find the last None value in data and replace it
+    for i in range(len(data) - 1, -1, -1):
+        if data[i] is None:
+            data[i] = value
+            logger.debug(f"Added point: Time = {time_data[i]:.2f}, Value = {value:.2f}")
+            break
+    
+    # Clear the input text, disable it, and update the text
+    dpg.set_value("input_text", "")
+    dpg.disable_item("input_text")
+    dpg.set_value("input_text_time", "Waiting for next input")
+    
+    # Update the plot
+    plot_RPE_graph()
+
 
 # Main Window
 with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800):
@@ -228,7 +224,7 @@ with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800)
         dpg.add_line_series([], [], label="RPE", parent=y_axis, tag="line_series")
         dpg.add_scatter_series([], [], label="Data Points", parent=y_axis, tag="scatter_series")
 
-    dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button")
+    dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button", enabled=False)
 
 # Input Window
 with dpg.window(label="Input RPE", tag="input_window", width=300, height=100, pos=[400, 400], no_title_bar=True, no_resize=True, no_move=True, show=False):
@@ -237,6 +233,9 @@ with dpg.window(label="Input RPE", tag="input_window", width=300, height=100, po
     dpg.disable_item("input_text")
 
 populate_participants()
+
+# Disable the record button initially
+dpg.disable_item("record_button")
 
 dpg.create_viewport(title='RPE data collection', width=800, height=800)
 dpg.setup_dearpygui()
