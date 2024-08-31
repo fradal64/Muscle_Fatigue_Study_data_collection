@@ -15,6 +15,7 @@ from src.RPE_recording.select_partecipant_and_session import (
 # Dear PyGui Setup
 dpg.create_context()
 
+
 # Main Window
 with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800):
     # Section for selecting participant and session
@@ -29,9 +30,6 @@ with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800)
     dpg.add_separator()
     dpg.add_text("Recording Section")
 
-    # Add timer
-    dpg.add_text("Elapsed Time: 0.00s", tag="timer", show=False)
-
     # Add plot
     with dpg.plot(label="RPE Data", height=300, width=-1):
         dpg.add_plot_legend()
@@ -41,7 +39,10 @@ with dpg.window(label="RPE Recorder", tag="RPE Recorder", width=800, height=800)
         dpg.add_line_series([], [], label="RPE", parent=y_axis, tag="line_series")
         dpg.add_scatter_series([], [], label="Data Points", parent=y_axis, tag="scatter_series")
 
-    dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button")
+    # Group for button and timer
+    with dpg.group(horizontal=True):
+        dpg.add_button(label="Start Recording", callback=toggle_recording, tag="record_button")
+        dpg.add_text("Elapsed Time: 0.00s", tag="timer")
 
 # Input Window
 with dpg.window(
@@ -61,6 +62,9 @@ with dpg.window(
 
 populate_participants()
 
+# Add a handler for the spacebar key press
+with dpg.handler_registry():
+    dpg.add_key_press_handler(dpg.mvKey_Spacebar, callback=toggle_recording)
 
 dpg.create_viewport(title="RPE data collection", width=800, height=800)
 dpg.setup_dearpygui()

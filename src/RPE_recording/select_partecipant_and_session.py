@@ -1,11 +1,8 @@
 import os
-import sys
-from pathlib import Path
 
 from dearpygui import dearpygui as dpg
 from loguru import logger
 
-sys.path.append(str(Path(__file__).resolve().parents[2]))
 from src.config import PROJ_ROOT
 
 
