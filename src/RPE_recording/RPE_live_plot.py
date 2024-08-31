@@ -92,6 +92,7 @@ def toggle_recording(sender, app_data, user_data):
         or participant == "No participants found"
         or not session
         or session == "No sessions found"
+        or session == "Select a session"
     ):
         error_message = "Please select a valid participant and session before starting recording."
         logger.error(error_message)

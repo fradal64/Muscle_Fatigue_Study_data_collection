@@ -9,7 +9,8 @@ from src.config import RAW_DATA_DIR
 def populate_participants():
     participants = [item.name for item in RAW_DATA_DIR.iterdir() if item.is_dir()]
 
-    if not participants:  # Check if the list is empty
+    if not participants:
+        # Configure the participant combo box and set it's value to "No participants found"
         dpg.configure_item("participant_combo", items=["No participants found"])
         dpg.set_value("participant_combo", "No participants found")
         logger.error("No participants found.")
@@ -41,6 +42,10 @@ def populate_sessions(sender, app_data, user_data):
         dpg.set_value("session_combo", "No sessions found")
         return
 
+    # Configure the session combo box and set it's value to "Select a session"
+    dpg.configure_item("session_combo", items=["Select a session"])
+    dpg.set_value("session_combo", "Select a session")
+
         # Construct the participant's directory path using Path
     participant_dir = RAW_DATA_DIR / participant
 
@@ -48,10 +53,12 @@ def populate_sessions(sender, app_data, user_data):
     filtered_sessions = get_filtered_sessions(participant_dir)
 
     if not filtered_sessions:  # Check if the list is empty
+        # Configure the session combo box and set it's value to "No sessions found"
         dpg.configure_item("session_combo", items=["No sessions found"])
         dpg.set_value("session_combo", "No sessions found")
         logger.error(f"No sessions found for participant {participant}.")
     else:
+        # Configure the session combo box with the filtered sessions
         dpg.configure_item("session_combo", items=filtered_sessions)
 
 
@@ -59,7 +66,7 @@ def load_session(sender, app_data):
     participant = dpg.get_value("participant_combo")
     session = dpg.get_value("session_combo")
 
-    if participant == "No participants found" or session == "No sessions found":
+    if participant == "No participants found" or session == "No sessions found" or session == "Select a session":
         logger.error(
             "Cannot load session because a valid participant or session was not selected."
         )
