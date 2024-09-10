@@ -1,3 +1,5 @@
-Participant_ID, Name
-P001, Max Wicham
-P002, Leonardo Garofalo
+Participant_ID, Name, MVIC
+P001, Leonardo Garofalo Right, 250
+P002, Leonardo Garofalo Left,
+P003, Domenico Di Fonza Right, 280
+P004, Domenico Di Fonza Left,
