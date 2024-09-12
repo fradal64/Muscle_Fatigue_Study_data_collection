@@ -76,7 +76,7 @@ def update_plot():
             dpg.focus_item("input_text")
 
             # Set the next update time between 5 and 15 seconds
-            next_update_time = elapsed_time + random.uniform(5, 10)
+            next_update_time = elapsed_time + random.uniform(5, 13)
 
 
 def toggle_recording(sender, app_data, user_data):
@@ -106,7 +106,7 @@ def toggle_recording(sender, app_data, user_data):
         # Initialize time tracking
         start_time = time.time()
         elapsed_time = 0
-        next_update_time = elapsed_time + random.uniform(5, 10)
+        next_update_time = elapsed_time + random.uniform(5, 13)
 
         # Add initial data point, fatigue is 0 at the start by study design
         time_data.append(0)
