@@ -5,11 +5,7 @@ import inquirer
 
 from src.config import PROJ_ROOT
 from src.utils.extract_session_info_from_file_path import extract_session_info_from_path
-
-
-def natural_sort_key(s):
-    """Helper function to perform natural sort order."""
-    return [int(text) if text.isdigit() else text.lower() for text in re.split(r"(\d+)", str(s))]
+from src.utils.natural_sort_key import natural_sort_key
 
 
 def select_file(prompt: str, directory: Path, file_extension: str) -> Path:

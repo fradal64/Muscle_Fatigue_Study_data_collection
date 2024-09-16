@@ -9,38 +9,55 @@ import scipy.io as sio
 from src.config import PROJ_ROOT
 from src.utils.extract_session_info_from_file_path import extract_session_info_from_path
 from src.utils.select_file import select_file
-
+from src.utils.get_rpe_filepath import get_rpe_file_path
 
 def convert_txt_to_csv(txt_file: Path, output_dir: Path):
     """
-    Converts a .txt file with time and sEMG values to a .csv file.
+    Converts a .txt file with time and sEMG values to a .csv file, appending the RPE data 
+    to the right side of the existing columns, and renaming columns as needed.
 
     Args:
         txt_file (Path): The path to the .txt file.
         output_dir (Path): The directory where the .csv file will be saved.
     """
-    # Load the .txt file
+    # Load the .txt file (EMG data)
     try:
-        data = pd.read_csv(txt_file, sep="\s+", header=None, skiprows=5)
+        emg_data = pd.read_csv(txt_file, sep="\s+", header=None, skiprows=5)
     except pd.errors.ParserError as e:
         print(f"Error parsing file {txt_file}: {e}")
         return
 
-    # Extract participant name, session number, and side information using the same function
+    # Extract participant name, session number, and side information
     try:
-        participant_name, session_info, side_info, set_info = extract_session_info_from_path(
-            txt_file
-        )
+        participant_name, session_info, side_info, set_info = extract_session_info_from_path(txt_file)
     except ValueError as e:
         print(f"Error extracting session info from file {txt_file}: {e}")
         return
 
+    # Rename the EMG time and sEMG columns
+    emg_data.columns = ["time_sEMG_seconds", "sEMG"]
+
+    # Get the corresponding RPE file path
+    rpe_file = get_rpe_file_path(txt_file)
+    
+    # If the RPE file exists, load the RPE data and append it to the right
+    if rpe_file:
+        try:
+            rpe_data = pd.read_csv(rpe_file)
+            
+            # Rename the columns: 'time' becomes 'time_RPE_seconds', and keep the 'RPE' column as-is
+            rpe_data.columns = ["time_RPE_seconds", "RPE"]
+
+            # Concatenate the RPE data to the right of the EMG data
+            emg_data = pd.concat([emg_data, rpe_data], axis=1)
+        except Exception as e:
+            print(f"Error loading or appending RPE data from {rpe_file}: {e}")
+
     # Save as a .csv file with participant name, session number, and side info in the filename
     csv_filename = output_dir / f"{participant_name}_{side_info}_{session_info}_Set_{set_info}.csv"
 
-    # Write the data to a .csv file
-    data.columns = ["time", "sEMG"]  # Assuming the columns are time and sEMG values
-    data.to_csv(csv_filename, index=False)
+    # Write the final combined data to a .csv file
+    emg_data.to_csv(csv_filename, index=False)
 
     print(f"Saved .csv file to {csv_filename}")
 
