@@ -27,11 +27,12 @@ def get_filtered_sessions(participant_dir):
         if session.is_dir():  # Ensure the session is a directory
             # Check if "completed.txt" file exists in the session directory
             completed_file = session / "completed.txt"
-            
+
             if not completed_file.exists():  # Exclude directory if it contains "completed.txt"
                 filtered_sessions.append(session.name)
 
     return filtered_sessions
+
 
 def populate_sessions(sender, app_data, user_data):
     participant = dpg.get_value("participant_combo")
@@ -46,7 +47,7 @@ def populate_sessions(sender, app_data, user_data):
     dpg.configure_item("session_combo", items=["Select a session"])
     dpg.set_value("session_combo", "Select a session")
 
-        # Construct the participant's directory path using Path
+    # Construct the participant's directory path using Path
     participant_dir = RAW_DATA_DIR / participant
 
     # Filter out directories that should be excluded
@@ -66,7 +67,11 @@ def load_session(sender, app_data):
     participant = dpg.get_value("participant_combo")
     session = dpg.get_value("session_combo")
 
-    if participant == "No participants found" or session == "No sessions found" or session == "Select a session":
+    if (
+        participant == "No participants found"
+        or session == "No sessions found"
+        or session == "Select a session"
+    ):
         logger.error(
             "Cannot load session because a valid participant or session was not selected."
         )
