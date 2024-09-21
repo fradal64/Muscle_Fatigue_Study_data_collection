@@ -8,12 +8,13 @@ import scipy.io as sio
 
 from src.config import PROJ_ROOT
 from src.utils.extract_session_info_from_file_path import extract_session_info_from_path
-from src.utils.select_file import select_file
 from src.utils.get_rpe_filepath import get_rpe_file_path
+from src.utils.select_file import select_file
+
 
 def convert_txt_to_csv(txt_file: Path, output_dir: Path):
     """
-    Converts a .txt file with time and sEMG values to a .csv file, appending the RPE data 
+    Converts a .txt file with time and sEMG values to a .csv file, appending the RPE data
     to the right side of the existing columns, and renaming columns as needed.
 
     Args:
@@ -29,7 +30,9 @@ def convert_txt_to_csv(txt_file: Path, output_dir: Path):
 
     # Extract participant name, session number, and side information
     try:
-        participant_name, session_info, side_info, set_info = extract_session_info_from_path(txt_file)
+        participant_name, session_info, side_info, set_info = extract_session_info_from_path(
+            txt_file
+        )
     except ValueError as e:
         print(f"Error extracting session info from file {txt_file}: {e}")
         return
@@ -39,12 +42,12 @@ def convert_txt_to_csv(txt_file: Path, output_dir: Path):
 
     # Get the corresponding RPE file path
     rpe_file = get_rpe_file_path(txt_file)
-    
+
     # If the RPE file exists, load the RPE data and append it to the right
     if rpe_file:
         try:
             rpe_data = pd.read_csv(rpe_file)
-            
+
             # Rename the columns: 'time' becomes 'time_RPE_seconds', and keep the 'RPE' column as-is
             rpe_data.columns = ["time_RPE_seconds", "RPE"]
 
